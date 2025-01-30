@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import Link from "next/link";
 // import { useShoppingCartupdateUserMutation } from "@/redux/services/usersApi";
 import { toast, Toaster } from "react-hot-toast";
+import Image from "next/image";
 
 const Carrito = () => {
   const dispatch = useAppDispatch();
@@ -92,102 +93,71 @@ const Carrito = () => {
 
   useEffect(() => {
     dispatch(getCartData());
-  }, []);
+  }, [dispatch]);
 
-  useEffect(() => {
-    console.log("Contenido del carrito:", cartItems);
-    handleUpdateCart();
-  }, [cartItems]);
+  // useEffect(() => {
+  //   handleUpdateCart();
+  // }, [handleUpdateCart]);
 
   return (
-    <div className="p-14 font-bold">
+    <section className="p-4 mt-16 md:p-14 font-bold">
       <fieldset className="border  p-4 rounded-md ">
         <legend className="text-2xl p-8 text-start font-bold text-secondary ">
           Detalle del Carrito
         </legend>
         <div className=" flex flex-col p-4 -mt-8 rounded-lg shadow-md">
-          {cartItems.length > 0 ? (
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-center p-2 mr-4"></th>
-                  <th className="text-center p-2">Producto</th>
-                  <th className="text-center p-2">material</th>
-                  <th className="text-center p-2">size</th>
-                  <th className="text-center p-2">finish</th>
-                  <th className="text-center p-2">Precio</th>
-                  <th className="text-center p-2">Cantidad</th>
-                  <th className="text-center p-2">Subtotal</th>
-                  <th className="p-2"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {cartItems.map((item) => (
-                  <tr key={item._id} className="border-b text-sm">
-                    <td className="p-2">
-                      <Link
-                        href={`/Details/${item._id}`}
-                        className="underline font-bold "
-                      >
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          className="object-contain w-20 h-20 mr-4"
-                        />
-                      </Link>
-                    </td>
-                    <td className="p-2 text-center">
-                      <Link
-                        href={`/Details/${item._id}`}
-                        className="underline font-bold "
-                      >
-                        {item.title}
-                      </Link>
-                    </td>
-                    <td className="p-2 text-center">{item.material}</td>
-                    <td className="p-2 text-center">{item.size}</td>
-                    <td className="p-2 text-center">{item.finish}</td>
-                    <td className="p-2 text-center">${item.price}</td>
-                    <td className="p-2 text-center">
-                      <input
-                        type="number"
-                        value={item.quantity}
-                        onChange={(e) => {
-                          const newQuantity = parseInt(e.target.value);
-                          if (newQuantity >= 1 && newQuantity <= item.stock) {
-                            handleQuantityChange(item._id, newQuantity);
-                          }
-                        }}
-                        min="1"
-                        max={item.stock}
-                        className="w-16 p-1 text-center border"
-                      />
-                    </td>
-                    <td className="p-2 text-center font-bold ">
-                      ${item.subtotal.toFixed(2)}
-                    </td>
-                    <td className="p-2 text-center hover:text-red-600  ">
-                      <button onClick={() => handleRemoveItem(item._id)}>
-                        Eliminar
-                      </button>
-                    </td>
-                    <Toaster position="top-center" />
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <p className="text-gray-600">
-              El carrito esta vacío.
-              <br />
-              <Link
-                href="/#product"
-                className="underline font-bold text-secondary"
-              >
-                <span>Revisa el catalogo para agregar productos</span>
-              </Link>
-            </p>
-          )}
+        {isCartEmpty ? (
+        <p className="text-center">Tu carrito está vacío</p>
+      ) : (
+        <div className="grid grid-cols-1 gap-4">
+          {cartItems.map((item) => (
+            <div key={item._id} className="border rounded-md p-4 shadow-md">
+              <div className="mb-2 flex md:flex-row gap-4">
+              <div className="mb-2">
+                <Image width={200} height={200} src={item.image} alt={item.title} className="w-full h-48 object-contain rounded-md" legacyBehavior />
+              </div>
+              <div className="flex flex-col gap-2">
+              <div className="mb-2">
+                <Link legacyBehavior href={`/Details/${item._id}`}>
+                  <p className="text-lg font-bold text-black">{item.title}</p>
+                </Link>
+              </div>
+              <div className="mb-2">
+                <span className="font-semibold">Precio: </span>${item.price}
+              </div>
+              <div className="mb-2">
+                <span className="font-semibold">Cantidad: </span>
+                <input
+                  type="number"
+                  value={item.quantity}
+                  onChange={(e) => {
+                    const newQuantity = parseInt(e.target.value);
+                    if (newQuantity >= 1 && newQuantity <= item.stock) {
+                      handleQuantityChange(item._id, newQuantity);
+                    }
+                  }}
+                  min="1"
+                  max={item.stock}
+                  className="w-16 p-1 text-center border"
+                />
+              </div>
+              <div className="mb-2">
+                <span className="font-semibold">Subtotal: </span>${item.subtotal.toFixed(2)}
+              </div>
+              <div className="text-center">
+                <button
+                  onClick={() => handleRemoveItem(item._id)}
+                  className="text-red-600 hover:text-red-800"
+                >
+                  Eliminar
+                </button>
+              </div>
+              </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
           <div className="w-full flex  m-2 p-4 max-h-80">
             <fieldset className="border border-bggris  p-4 rounded-md">
               <legend className="text-base  text-start font-bold text-bgred p-4">
@@ -210,28 +180,28 @@ const Carrito = () => {
                   </p>
                   <br />
                   {!isCartEmpty && (
-        <>
-          {user ? (
-            <Link href="/Checkout">
-              <button
-                className="bg-secondary text-white text-base py-2 px-10 rounded-lg mx-2 
+                    <>
+                      {user ? (
+                        <Link href="/Checkout">
+                          <button
+                            className="bg-secondary text-white text-base py-2 px-10 rounded-lg mx-2 
                 flex justify-center items-center text-center whitespace-nowrap hover:bg-bgred hover:text-white"
-              >
-                Finalizar Compra
-              </button>
-            </Link>
-          ) : (
-            <Link href="/Sign-in">
-              <button
-                className="bg-secondary text-white text-base py-2 px-10 rounded-lg mx-2 
+                          >
+                            Finalizar Compra
+                          </button>
+                        </Link>
+                      ) : (
+                        <Link href="/Sign-in">
+                          <button
+                            className="bg-secondary text-white text-base py-2 px-10 rounded-lg mx-2 
                 flex justify-center items-center text-center whitespace-nowrap hover:bg-bgred hover:text-white"
-              >
-                Inicia Sesión para Finalizar Compra
-              </button>
-            </Link>
-          )}
-        </>
-      )}
+                          >
+                            Inicia Sesión para Finalizar Compra
+                          </button>
+                        </Link>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
             </fieldset>
@@ -240,7 +210,7 @@ const Carrito = () => {
       </fieldset>
 
       {/* cierre del contenedor principal */}
-    </div>
+    </section>
   );
 };
 
