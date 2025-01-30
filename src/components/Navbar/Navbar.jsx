@@ -70,7 +70,8 @@ const Navbar = () => {
 
   return (
     <nav className="w-full bg-white p-4 shadow-md">
-      <div className="container mx-auto flex flex-col items-center justify-between md:flex-row">
+    <div className="container mx-auto flex flex-col md:flex-row items-center justify-between">
+      <div className="flex justify-between w-full md:w-auto">
         <div className="text-xl font-bold">
           <Link href="/">Logo</Link>
         </div>
@@ -79,43 +80,35 @@ const Navbar = () => {
             {isOpen ? <MdClose /> : <MdMenu />}
           </button>
         </div>
-        <div
-          className={`md:flex ${isOpen ? "block" : "hidden"} w-full md:w-auto`}
-        >
-          <ul className="flex flex-col md:flex-row md:items-center">
-            {categories.map((category) => (
-              <li key={category.path} className="p-2">
-                <Link href={`/products/${category.path}`}>{category.name}</Link>
-              </li>
-            ))}
-            <li className="p-2">
-              <Link legacyBehavior href="/cart">
-                <a className="flex items-center">
-                  <MdOutlineShoppingCart className="mr-1" />
-                  {cartItemsCount}
-                </a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/about">
-                <a className="p-2 text-gray-500 hover:text-gray-700">
-                  <FontAwesomeIcon icon={faInfoCircle} />
-                </a>
-              </Link>
-            </li>
-            {localUser ? (
-              <li className="p-2">
-                <Link href="/Profile">Perfil</Link>
-              </li>
-            ) : (
-              <li className="p-2">
-                <Link href="/login">Iniciar sesión</Link>
-              </li>
-            )}
-          </ul>
-        </div>
       </div>
-    </nav>
+      <div className={`md:flex ${isOpen ? "block" : "hidden"} w-full md:w-auto`}>
+        <ul className="flex flex-col md:flex-row md:items-center">
+          {categories.map((category) => (
+            <li key={category.path} className="p-2">
+              <Link href={`/products/${category.path}`}>{category.name}</Link>
+            </li>
+          ))}
+          <li className="p-2">
+            <Link legacyBehavior href="/cart">
+              <a className="flex items-center">
+                <MdOutlineShoppingCart className="mr-1" />
+                {cartItemsCount}
+              </a>
+            </Link>
+          </li>
+          {localUser ? (
+            <li className="p-2">
+              <Link href="/profile">Perfil</Link>
+            </li>
+          ) : (
+            <li className="p-2">
+              <Link href="/login">Iniciar sesión</Link>
+            </li>
+          )}
+        </ul>
+      </div>
+    </div>
+  </nav>
   );
 };
 
