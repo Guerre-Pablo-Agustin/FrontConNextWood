@@ -18,6 +18,7 @@ import { getlogindata, logoutUser } from "@/redux/features/userSlice";
 import Image from "next/image";
 import Buscador from "../Buscador/Buscador";
 import logo from "../../../public/images/ecowood.jpg";
+import { MdClose, MdMenu, MdOutlineShoppingCart } from "react-icons/md";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -62,123 +63,51 @@ const Navbar = () => {
     window.location.href = `/SearchPage?query=${searchQuery}`;
   };
 
-  const renderView = () => {
-    return (
-      <>
-        <li
-          className={`cursor-pointer ${
-            pathname === "/Sobre-nosotros" ? "underline" : ""
-          }`}
-        >
-          <Link href="/Sobre-nosotros" legacyBehavior>
-            <p className="text-tertiary flex items-center font-light">
-              <FontAwesomeIcon icon={faInfoCircle} className="mr-1" />
-              <span>Sobre Nosotros</span>
-            </p>
-          </Link>
-        </li>
-        {user ? (
-          <>
-            <li
-              className={`cursor-pointer ${
-                pathname === "/My-account" ? "underline" : ""
-              }`}
-            >
-              <Link href="/My-account">
-                <p className="text-tertiary flex items-center font-light">
-                  <FontAwesomeIcon icon={faUser} className="mr-1" />
-                  Mi Cuenta
-                </p>
-              </Link>
-            </li>
-            <li className="cursor-pointer" onClick={handleSignOut}>
-              <p className="text-tertiary flex items-center font-light">
-                <FontAwesomeIcon icon={faSignOutAlt} className="mr-1" />
-                Cerrar Sesión
-              </p>
-            </li>
-          </>
-        ) : (
-          <li
-            className={`cursor-pointer ${
-              pathname === "/Sign-in" ? "underline" : ""
-            }`}
-          >
-            <Link href="/Sign-in">
-              <p className="text-tertiary flex items-center font-light">
-                <FontAwesomeIcon icon={faUser} className="mr-1" />
-                Sign in
-              </p>
-            </Link>
-          </li>
-        )}
-
-        <li
-          className={`cursor-pointer ${
-            pathname === "/Carrito" ? "underline" : ""
-          }`}
-        >
-          <Link href="/Carrito" legacyBehavior>
-            <a className="text-tertiary flex items-center">
-              <FontAwesomeIcon icon={faShoppingCart} />
-              <span className="bg-red-500 text-white text-xs p-1 rounded-full ml-1">
-                {cartItemsCount}
-              </span>
-            </a>
-          </Link>
-        </li>
-      </>
-    );
+  const [isOpen, setIsOpen] = useState(false);
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
   };
 
+
   return (
-    <nav className="flex justify-between items-center fixed z-10 top-0 w-full py-8 px-10 bg-primary text-tertiary h-20">
-      <ul className="flex items-center gap-7">
-        <li
-          className={`font-semibold text-lg ${
-            pathname === "/" ? "underline" : ""
-          }`}
-        >
-          <Link href="/" legacyBehavior>
-            <a className="text-tertiary flex items-center">
-              <Image
-                src={logo}
-                width={100}
-                height={100}
-                alt="Logo Wood"
-                className="rounded-full"
-              />
-            </a>
-          </Link>
-        </li>
-        {categories.map((category) => (
-          <li
-            key={category.path}
-            className={
-              pathname === `/Products/${category.path}`
-                ? "underline text-tertiary font-light"
-                : "text-tertiary font-light"
-            }
-          >
-            <Link legacyBehavior href={`/Products/${category.path}`}>
-              <a className="hover:border-b-2 border-white">{category.name}</a>
+    <nav className="bg-white w-full shadow-md p-4">
+    <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
+      <div className="text-xl font-bold">
+        <Link href="/">Logo</Link>
+      </div>
+      <div className="md:hidden">
+        <button onClick={toggleMenu} className="text-2xl">
+          {isOpen ? <MdClose /> : <MdMenu />}
+        </button>
+      </div>
+      <div className={`md:flex ${isOpen ? "block" : "hidden"} w-full md:w-auto`}>
+        <ul className="flex flex-col md:flex-row md:items-center">
+          {categories.map((category) => (
+            <li key={category.path} className="p-2">
+              <Link href={`/products/${category.path}`}>{category.name}</Link>
+            </li>
+          ))}
+          <li className="p-2">
+            <Link legacyBehavior href="/cart">
+              <a className="flex items-center">
+                <MdOutlineShoppingCart className="mr-1" />
+                {cartItemsCount}
+              </a>
             </Link>
           </li>
-        ))}
-      </ul>
-
-      {/*  <div className="flex items-center">
-        <Buscador handleSearch={(e) => setSearchQuery(e.target.value)} />
-        <button
-          onClick={handleSearch}
-          className="ml-2 p-2 bg-secondary text-primary rounded flex items-center justify-center transition-transform duration-300 hover:scale-110 hover:bg-secondary"
-        >
-          <FontAwesomeIcon icon={faSearch} className="h-5 w-5 text-primary" />
-        </button>
-      </div> */}
-
-      <ul className="flex items-center gap-3">{renderView()}</ul>
-    </nav>
+          {localUser ? (
+            <li className="p-2">
+              <Link href="/Profile">Perfil</Link>
+            </li>
+          ) : (
+            <li className="p-2">
+              <Link href="/login">Iniciar sesión</Link>
+            </li>
+          )}
+        </ul>
+      </div>
+    </div>
+  </nav>
   );
 };
 
