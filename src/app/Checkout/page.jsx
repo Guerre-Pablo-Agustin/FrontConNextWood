@@ -8,6 +8,8 @@ import axios from "axios";
 import { cleanCart } from "@/redux/features/cart";
 import { useNewPurchaseMutation } from "@/redux/services/purchaseHistoryApi";
 import { ToastContainer, toast } from "react-toastify";
+import Image from "next/image";
+import Link from "next/link";
 
 const Page = () => {
   const cartItems = useSelector((state) => state.cartReducer.cartItems);
@@ -121,47 +123,60 @@ const Page = () => {
   };
 
   return (
-    <div className="p-14 font-bold">
+    <div className="p-4 mt-16 md:p-14 font-bold">
       <fieldset className="border  p-4 rounded-md ">
         <legend className="text-2xl p-8 text-start font-bold text-bgred ">
           Checkout
         </legend>
-        <div className=" flex flex-col p-4 -mt-8 rounded-lg shadow-md">
-          {cartItems.length > 0 ? (
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-2 mr-4"></th>
-                  <th className="text-left p-2">Producto</th>
-                  <th className="text-left p-2">Cantidad</th>
-                  <th className="text-left p-2">Subtotal</th>
-                  <th className="p-2"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {cartItems.map((item) => (
-                  <tr key={item._id} className="border-b text-sm">
-                    <td className="p-2">
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="object-contain w-20 h-20 mr-4"
-                      />
-                    </td>
-                    <td className="p-2">{item.title}</td>
-                    <td className="p-2">{item.quantity}</td>
-                    <td className="p-2 font-bold text-bgred">
-                      ${item.subtotal.toFixed(2)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <p className="text-gray-600">El carrito está vacío.</p>
-          )}
+        <div className=" flex flex-col gap-4 p-4 -mt-8 rounded-lg shadow-md">
+        {cartItems.map((item) => (
+            <div key={item._id} className="border rounded-md p-4 shadow-md">
+              <div className="mb-2 flex md:flex-row gap-4">
+              <div className="mb-2">
+                <Image width={200} height={200} src={item.image} alt={item.title} className="w-full h-48 object-contain rounded-md" legacyBehavior />
+              </div>
+              <div className="flex flex-col gap-2">
+              <div className="mb-2">
+                <Link legacyBehavior href={`/Details/${item._id}`}>
+                  <p className="text-lg font-bold text-black">{item.title}</p>
+                </Link>
+              </div>
+              <div className="mb-2">
+                <span className="font-semibold">Precio: </span>${item.price}
+              </div>
+              <div className="mb-2">
+                <span className="font-semibold">Cantidad: </span>
+                <input
+                  type="number"
+                  value={item.quantity}
+                  onChange={(e) => {
+                    const newQuantity = parseInt(e.target.value);
+                    if (newQuantity >= 1 && newQuantity <= item.stock) {
+                      handleQuantityChange(item._id, newQuantity);
+                    }
+                  }}
+                  min="1"
+                  max={item.stock}
+                  className="w-16 p-1 text-center border"
+                />
+              </div>
+              <div className="mb-2">
+                <span className="font-semibold">Subtotal: </span>${item.subtotal.toFixed(2)}
+              </div>
+              <div className="text-center">
+                <button
+                  onClick={() => handleRemoveItem(item._id)}
+                  className="text-red-600 hover:text-red-800"
+                >
+                  Eliminar
+                </button>
+              </div>
+              </div>
+              </div>
+            </div>
+          ))}
           <div className="flex justify-start m-2 p-4 ">
-            <fieldset className="border border-bggris w-[40%]  p-4 rounded-md">
+            <fieldset className="border border-bggris w-[90%]  p-4 rounded-md">
               <legend className="text-base  text-start font-bold text-bgred p-4">
                 Resumen del Carrito
               </legend>
