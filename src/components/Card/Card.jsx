@@ -4,7 +4,7 @@ import React from "react";
 
 const Card = ({ _id, title, price, image }) => {
   return (
-    <Link href={`/Details/${_id}`}>
+    <Link href={`/details/${_id}`}>
       <div className="bg-white text-tertiary shadow-xl hover:scale-105 hover:shadow-2xl transition-transform duration-300 rounded-lg p-2 cursor-pointer">
         <div className="flex justify-center items-center py-2 px-4">
           <Image
